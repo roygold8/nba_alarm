@@ -7,6 +7,7 @@ from selenium.webdriver.chrome.options import Options
 from Game import create_games_from_web, create_games_from_csv
 from Globals import WEB_ADDRESS, ALARM_FILE, ALERTS_FILE, LOG_FILE
 from alarm_file import remove_from_alert_file
+from Calendar import create_calndar_event_now
 
 
 def active_alarm(alarm_file):
@@ -23,11 +24,13 @@ if __name__ == '__main__':
         driver.get(WEB_ADDRESS)
         online_games = create_games_from_web(driver)
         for game in online_games:
+            print(game)
             if game.check_if_alert_on_game(alert_games):
                 print('!')
                 remove_from_alert_file(game.home_team, game.guest_team)
                 with open(LOG_FILE, 'a') as file:
                     file.write(str(game))
+                create_calndar_event_now(title='{} vs {}'.format(game.home_team, game.guest_team), description=game)
                 active_alarm(ALARM_FILE)
         n += 1
         print(n)
